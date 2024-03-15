@@ -50,6 +50,7 @@ namespace ImGuiNET
 		private static UVector3 matrixTranslation = UVector3.zero;
 		private static UVector3 matrixRotation = UVector3.zero;
 		private static UVector3 matrixScale = UVector3.zero;
+		private static UVector3 snap = UVector3.zero;
 #endif
 
 		private static void SetThing(out float i, float val) { i = val; }
@@ -240,6 +241,8 @@ namespace ImGuiNET
 #endif
 
 #if USE_IMGUIZMO
+			// Sanity check only. For making it work, you need to have a view system
+			// Check the original code at https://github.com/CedricGuillemet/ImGuizmo/blob/master/example/main.cpp
 			if (ImGui.Begin("ImGuizmo Test"))
 			{
 				if (ImGui.Checkbox("EnableGizmo", ref enableGizmos))
@@ -280,25 +283,19 @@ namespace ImGuiNET
 					useSnap = !useSnap;
 				ImGui.Checkbox("Snap", ref useSnap);
 				ImGui.SameLine();
-				//vec_t snap;
-				//switch (mCurrentGizmoOperation)
-				//{
-				//	case ImGuizmo::TRANSLATE:
-				//		snap = config.mSnapTranslation;
-				//		ImGui.InputFloat3("Snap", &snap.x);
-				//		break;
-				//	case ImGuizmo::ROTATE:
-				//		snap = config.mSnapRotation;
-				//		ImGui.InputFloat("Angle Snap", &snap.x);
-				//		break;
-				//	case ImGuizmo::SCALE:
-				//		snap = config.mSnapScale;
-				//		ImGui.InputFloat("Scale Snap", &snap.x);
-				//		break;
-				//}
 
-				ImGuizmo.SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-				//ImGuizmo.Manipulate(camera.mView.m16, camera.mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, matrix.m16, NULL, useSnap ? &snap.x : NULL);
+				switch (mCurrentGizmoOperation)
+				{
+					case OPERATION.TRANSLATE:
+						ImGui.InputFloat3("Snap", ref snap);
+						break;
+					case OPERATION.ROTATE:
+						ImGui.InputFloat("Angle Snap", ref snap.y);
+						break;
+					case OPERATION.SCALE:
+						ImGui.InputFloat("Scale Snap", ref snap.z);
+						break;
+				}
 
 				ImGui.End();
 			}

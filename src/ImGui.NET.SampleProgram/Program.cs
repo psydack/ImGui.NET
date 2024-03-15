@@ -11,10 +11,12 @@ using ImGuizmoNET;
 #endif
 
 using System.Linq;
-using UnityEngine;
 using Veldrid;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
+using System.Numerics;
+using UVector3 = UnityEngine.Vector3;
+using UVector2 = UnityEngine.Vector2;
 
 namespace ImGuiNET
 {
@@ -37,6 +39,18 @@ namespace ImGuiNET
 		private static byte[] _memoryEditorData;
 		private static uint s_tab_bar_flags = (uint)ImGuiTabBarFlags.Reorderable;
 		private static bool[] s_opened = { true, true, true, true }; // Persistent user state
+
+#if USE_IMGUIZMO
+		private static OPERATION mCurrentGizmoOperation = OPERATION.ROTATE;
+		private static MODE mCurrentGizmoMode = MODE.WORLD;
+		private static bool useSnap = false;
+		private static bool enableGizmos = false;
+
+		private static UnityEngine.Matrix4x4 matrix = new UnityEngine.Matrix4x4();
+		private static UVector3 matrixTranslation = UVector3.zero;
+		private static UVector3 matrixRotation = UVector3.zero;
+		private static UVector3 matrixScale = UVector3.zero;
+#endif
 
 		private static void SetThing(out float i, float val) { i = val; }
 
@@ -70,7 +84,7 @@ namespace ImGuiNET
 
 				_cl.Begin();
 				_cl.SetFramebuffer(_gd.MainSwapchain.Framebuffer);
-				_cl.ClearColorTarget(0, new RgbaFloat(_clearColor.x, _clearColor.y, _clearColor.z, 1f));
+				_cl.ClearColorTarget(0, new RgbaFloat(_clearColor.X, _clearColor.Y, _clearColor.Z, 1f));
 				_controller.Render(_gd, _cl);
 				_cl.End();
 				_gd.SubmitCommands(_cl);
@@ -129,7 +143,7 @@ namespace ImGuiNET
 			{
 				// Normally user code doesn't need/want to call this because positions are saved in .ini file anyway.
 				// Here we just want to make the demo initial state a bit more friendly!
-				ImGui.SetNextWindowPos(new Vector2(650, 20), ImGuiCond.FirstUseEver);
+				ImGui.SetNextWindowPos(new UVector2(650, 20), ImGuiCond.FirstUseEver);
 				ImGui.ShowDemoWindow(ref _showImGuiDemoWindow);
 			}
 
@@ -226,7 +240,68 @@ namespace ImGuiNET
 #endif
 
 #if USE_IMGUIZMO
+			if (ImGui.Begin("ImGuizmo Test"))
+			{
+				if (ImGui.Checkbox("EnableGizmo", ref enableGizmos))
+	
+				ImGuizmo.Enable(enableGizmos);
 
+				if (ImGui.IsKeyPressed(ImGuiKey.W))
+					mCurrentGizmoOperation = OPERATION.TRANSLATE;
+				if (ImGui.IsKeyPressed(ImGuiKey.E))
+					mCurrentGizmoOperation = OPERATION.ROTATE;
+				if (ImGui.IsKeyPressed(ImGuiKey.R))
+					mCurrentGizmoOperation = OPERATION.SCALE;
+				if (ImGui.RadioButton("Translate", mCurrentGizmoOperation == OPERATION.TRANSLATE))
+					mCurrentGizmoOperation = OPERATION.TRANSLATE;
+				ImGui.SameLine();
+				if (ImGui.RadioButton("Rotate", mCurrentGizmoOperation == OPERATION.ROTATE))
+					mCurrentGizmoOperation = OPERATION.ROTATE;
+				ImGui.SameLine();
+				if (ImGui.RadioButton("Scale", mCurrentGizmoOperation == OPERATION.SCALE))
+					mCurrentGizmoOperation = OPERATION.SCALE;
+
+				ImGuizmo.DecomposeMatrixToComponents(ref matrix.m33, ref matrixTranslation.x, ref matrixRotation.x, ref  matrixScale.x);
+				ImGui.InputFloat3("Tr", ref matrixTranslation);
+				ImGui.InputFloat3("Rt", ref matrixRotation);
+				ImGui.InputFloat3("Sc", ref matrixScale);
+				ImGuizmo.RecomposeMatrixFromComponents(ref matrixTranslation.x, ref matrixRotation.x, ref matrixScale.x, ref matrix.m33);
+
+				if (mCurrentGizmoOperation != OPERATION.SCALE)
+				{
+					if (ImGui.RadioButton("Local", mCurrentGizmoMode == MODE.LOCAL))
+						mCurrentGizmoMode = MODE.LOCAL;
+					ImGui.SameLine();
+					if (ImGui.RadioButton("World", mCurrentGizmoMode == MODE.WORLD))
+						mCurrentGizmoMode = MODE.WORLD;
+				}
+
+				if (ImGui.IsKeyPressed(ImGuiKey.S))
+					useSnap = !useSnap;
+				ImGui.Checkbox("Snap", ref useSnap);
+				ImGui.SameLine();
+				//vec_t snap;
+				//switch (mCurrentGizmoOperation)
+				//{
+				//	case ImGuizmo::TRANSLATE:
+				//		snap = config.mSnapTranslation;
+				//		ImGui.InputFloat3("Snap", &snap.x);
+				//		break;
+				//	case ImGuizmo::ROTATE:
+				//		snap = config.mSnapRotation;
+				//		ImGui.InputFloat("Angle Snap", &snap.x);
+				//		break;
+				//	case ImGuizmo::SCALE:
+				//		snap = config.mSnapScale;
+				//		ImGui.InputFloat("Scale Snap", &snap.x);
+				//		break;
+				//}
+
+				ImGuizmo.SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+				//ImGuizmo.Manipulate(camera.mView.m16, camera.mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, matrix.m16, NULL, useSnap ? &snap.x : NULL);
+
+				ImGui.End();
+			}
 #endif
 
 #if USE_IMNODES

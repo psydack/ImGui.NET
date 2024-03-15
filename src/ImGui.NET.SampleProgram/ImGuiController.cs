@@ -15,6 +15,7 @@ using Veldrid;
 using Shader = Veldrid.Shader;
 using Texture = Veldrid.Texture;
 using System.Runtime.CompilerServices;
+using ImGuizmoNET;
 
 namespace ImGuiNET
 {
@@ -97,6 +98,7 @@ namespace ImGuiNET
 			ImPlot.CreateContext();
 			ImPlot.SetImGuiContext(context);
 #endif
+
 			CreateDeviceResources(gd, outputDescription);
 			SetPerFrameImGuiData(1f / 60f);
 			ImGui.NewFrame();

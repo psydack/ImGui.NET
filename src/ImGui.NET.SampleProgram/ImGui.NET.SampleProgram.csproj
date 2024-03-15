@@ -6,12 +6,17 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants);USE_IMPLOT;USE_IMGUIZMO</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ImGui.NET\ImGui.NET.csproj" />
     <PackageReference Include="Veldrid" Version="4.8.0" />
     <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
     <ProjectReference Include="..\imnodes.NET\imnodes.NET.csproj" />
     <ProjectReference Include="..\ImPlot.NET\ImPlot.NET.csproj" />
+    <ProjectReference Include="..\ImGuizmo.NET\ImGuizmo.NET.csproj" />
     <ProjectReference Include="..\TestDotNetStandardLib\TestDotNetStandardLib.csproj" />
   </ItemGroup>
 
@@ -28,6 +33,8 @@
 
   <ItemGroup>
     <Content Include="$(RepositoryRootDirectory)/deps/cimgui/win-x64/cimgui.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRootDirectory)/deps/cimplot.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRootDirectory)/deps/cimguizmo.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(RepositoryRootDirectory)/deps/cimgui/osx/cimgui.dylib" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(RepositoryRootDirectory)/deps/cimgui/linux-x64/cimgui.so" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

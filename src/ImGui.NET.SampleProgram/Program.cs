@@ -214,12 +214,19 @@ namespace ImGuiNET
 #if USE_IMPLOT
 			if (ImGui.Begin("Plot Test"))
 			{
-				ImGui.ColorEdit3("clear color", ref clear_color);
-				ImPlot.BeginPlot("TTE");
-				ImPlot.EndPlot();
-
+				if(ImPlot.BeginPlot("Test Psy Curves"))
+				{
+					float a = 1;
+					ImPlot.PlotBars("Power bar", ref a, 5);
+					ImPlot.PlotLine("TESTE", ref a, 1);
+					ImPlot.EndPlot();
+				}
 				ImGui.End();
 			}
+#endif
+
+#if USE_IMGUIZMO
+
 #endif
 
 #if USE_IMNODES

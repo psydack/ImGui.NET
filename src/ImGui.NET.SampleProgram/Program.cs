@@ -2,8 +2,12 @@
 using imnodesNET;
 #endif
 
-#if USE_IMNODES
+#if USE_IMPLOT
 using ImPlotNET;
+#endif
+
+#if USE_IMGUIZMO
+using ImGuizmoNET;
 #endif
 
 using System.Linq;

@@ -30,6 +30,9 @@
     <None Remove="build\net40\ImPlot.NET.targets" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="$(RepositoryRootDirectory)/deps/cimplot.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="UnityEngine" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">
         <HintPath>/Applications/Unity/Hub/Editor/2022.3.15f1/Unity.app/Contents/Managed/UnityEngine.dll</HintPath>
     </Reference>
